@@ -24,7 +24,7 @@ class ImagesDataset(Dataset):
 
         if self.label is not None:
             label = torch.tensor(self.label.iloc[index].values, dtype=torch.float)
-            sample |= {"label": label.argmax(0, True)}
+            sample |= {"label": label.argmax(0)}
 
         return sample
 
