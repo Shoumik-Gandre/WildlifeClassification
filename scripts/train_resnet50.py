@@ -62,9 +62,18 @@ def train(model: nn.Module, criterion: nn.CrossEntropyLoss, optimizer: torch.opt
     lr_scheduler.step()
 
 
-def main(features_path: str, labels_path: str, images_root: str, config_path: str, model_save_path: str):
-    # Hyperparams
-    batch_size = 32
+def main(
+        # Paths
+        features_path: str, 
+        labels_path: str, 
+        images_root: str, 
+        # config_path: str, 
+        model_save_path: str,
+        
+        # Hyperparams
+        num_epochs: int = 1,
+        batch_size: int = 32
+    ) -> None:
 
     device = torch.device('cuda')
 
@@ -82,8 +91,8 @@ def main(features_path: str, labels_path: str, images_root: str, config_path: st
     model = resnet50_animal()
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
-    lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[10, 20], gamma=0.1)
-    train(nn.DataParallel(model), criterion, optimizer, lr_scheduler, train_dataloader, eval_dataloader, num_epochs=1, device=device)
+    lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[2, 3], gamma=0.1)
+    train(nn.DataParallel(model), criterion, optimizer, lr_scheduler, train_dataloader, eval_dataloader, num_epochs=num_epochs, device=device)
     torch.save(model.state_dict(), model_save_path)
 
 if __name__ == '__main__':
