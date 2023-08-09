@@ -57,6 +57,7 @@ def train(model: nn.Module, criterion: nn.CrossEntropyLoss, optimizer: torch.opt
     for epoch in range(1, num_epochs+1):
         train_step(model, criterion, optimizer, train_dataloader, device)
         eval_loss = eval_step(model, criterion, eval_dataloader, device)
+        print(f'{eval_loss = }')
     lr_scheduler.step()
 
 
