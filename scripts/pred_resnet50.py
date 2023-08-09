@@ -39,7 +39,7 @@ def main(
     model = model.to(device)
     model.eval()
 
-    with torch.no_grad():
+    with torch.no_grad(): # type: ignore
         for batch in tqdm(dataloader):
             # run the forward step
             logits = model.forward(batch["image"].to(device))
