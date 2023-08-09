@@ -1,7 +1,7 @@
 from torch import nn
 import torchvision.models as models
 
-def get_baseline_model():
+def resnet50_animal():
     model = models.resnet50(weights=models.ResNet50_Weights.DEFAULT)
     model.fc = nn.Sequential( # type: ignore
         nn.Linear(2048, 100),  # dense layer takes a 2048-dim input and outputs 100-dim
