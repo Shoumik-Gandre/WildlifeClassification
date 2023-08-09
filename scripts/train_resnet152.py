@@ -11,13 +11,12 @@ from sklearn.utils import compute_class_weight
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
-from torchvision import transforms
 
 from tqdm import tqdm
 
 sys.path.append(str(Path.cwd().parents[0]))
 from conservision.dataset import ImagesDataset
-from conservision.models import resnet50_animal
+from conservision.models import resent152_animal
 from utils.load import load_training_data
 from utils.transforms import BASIC_TRANSFORM
 from utils.augmentations import AUGMENTATIONS
@@ -88,7 +87,7 @@ def main(
     eval_dataset = ImagesDataset(x_eval, y_eval, BASIC_TRANSFORM)
     train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=2)
     eval_dataloader = DataLoader(eval_dataset, batch_size=batch_size, num_workers=2)
-    model = resnet50_animal()
+    model = resent152_animal()
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
     lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[2, 3, 4, 5], gamma=0.1)

@@ -9,7 +9,7 @@ from tqdm import tqdm
 
 sys.path.append(str(Path.cwd().parents[0]))
 from conservision.dataset import ImagesDataset
-from conservision.models import resnet50_animal
+from conservision.models import resent152_animal
 from utils.transforms import BASIC_TRANSFORM
 
 
@@ -23,7 +23,7 @@ def main(
     ) -> None:
 
     Path(prediction_path).parent.mkdir(parents=True, exist_ok=True)
-    
+
     device = torch.device(device_name)
 
     features = pd.read_csv(features_csv, index_col="id")
@@ -36,7 +36,7 @@ def main(
 
     preds_collector = []
 
-    model = resnet50_animal()
+    model = resent152_animal()
     model.load_state_dict(torch.load(model_path, map_location='cpu'))
     model = model.to(device)
     model.eval()
