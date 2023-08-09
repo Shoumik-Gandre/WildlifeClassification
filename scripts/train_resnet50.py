@@ -1,6 +1,6 @@
 import sys
 from pathlib import Path
-from typing import Iterable
+from typing import Any, Iterable
 
 import fire
 import numpy as np
@@ -20,9 +20,10 @@ from conservision.dataset import ImagesDataset
 from conservision.models import resnet50_animal
 from utils.load import load_training_data
 from utils.transforms import BASIC_TRANSFORM
+from utils.augmentations import AUGMENTATIONS
 
 
-def train_step(model: nn.Module, criterion: nn.Module, optimizer: torch.optim.Optimizer, dataloader: DataLoader, device: torch.device):
+def train_step(model: nn.Module, criterion: nn.Module, optimizer: torch.optim.Optimizer, dataloader: DataLoader, augmentations: Any, device: torch.device):
     model = model.train()
     for batch in tqdm(dataloader, desc="training"):
         x = batch['image'].to(device)
@@ -55,7 +56,7 @@ def eval_step(model: nn.Module, criterion: nn.CrossEntropyLoss, dataloader: Data
 def train(model: nn.Module, criterion: nn.CrossEntropyLoss, optimizer: torch.optim.Optimizer, lr_scheduler: torch.optim.lr_scheduler._LRScheduler, train_dataloader: DataLoader, eval_dataloader: DataLoader, num_epochs: int, device: torch.device):
     model = model.to(device)
     for epoch in range(1, num_epochs+1):
-        train_step(model, criterion, optimizer, train_dataloader, device)
+        train_step(model, criterion, optimizer, train_dataloader, AUGMENTATIONS, device)
         eval_loss = eval_step(model, criterion, eval_dataloader, device)
         print(f'{eval_loss = }')
     lr_scheduler.step()
