@@ -17,8 +17,9 @@ from tqdm import tqdm
 
 sys.path.append(str(Path.cwd().parents[0]))
 from conservision.dataset import ImagesDataset
-from conservision.models import get_baseline_model
+from conservision.models import resnet50_animal
 from utils.load import load_training_data
+from utils.transforms import BASIC_TRANSFORM
 
 
 def train_step(model: nn.Module, criterion: nn.Module, optimizer: torch.optim.Optimizer, dataloader: DataLoader, device: torch.device):
@@ -72,11 +73,11 @@ def main(features_path: str, labels_path: str, images_root: str, config_path: st
     x, y = load_training_data(features_csv=features_path, labels_csv=labels_path, images_root=images_root)
     x_train, x_eval, y_train, y_eval = train_test_split(x, y, stratify=y, test_size=0.25, random_state=42)
     # class_weights = compute_class_weight('balanced', classes=np.unique(y_train), y=y_train)
-    train_dataset = ImagesDataset(x_train, y_train, transforms.Compose([transforms.Resize((224, 224)), transforms.ToTensor(), transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))]))
-    eval_dataset = ImagesDataset(x_eval, y_eval, transforms.Compose([transforms.Resize((224, 224)), transforms.ToTensor(), transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))]))
+    train_dataset = ImagesDataset(x_train, y_train, BASIC_TRANSFORM)
+    eval_dataset = ImagesDataset(x_eval, y_eval, BASIC_TRANSFORM)
     train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=2)
     eval_dataloader = DataLoader(eval_dataset, batch_size=batch_size, num_workers=2)
-    model = get_baseline_model()
+    model = resnet50_animal()
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
     lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[10, 20], gamma=0.1)
