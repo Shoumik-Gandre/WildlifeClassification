@@ -13,7 +13,7 @@ def resnet50_animal():
 
 
 def resent152_animal():
-    model = models.resnet152(weights=models.ResNet50_Weights.DEFAULT)
+    model = models.resnet152(weights=models.ResNet152_Weights.DEFAULT)
     model.fc = nn.Sequential( # type: ignore
         nn.Linear(2048, 100),  # dense layer takes a 2048-dim input and outputs 100-dim
         nn.ReLU(inplace=True),  # ReLU activation introduces non-linearity
