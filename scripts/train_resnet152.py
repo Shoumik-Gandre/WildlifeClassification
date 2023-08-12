@@ -82,6 +82,7 @@ def main(
     
     # Load Dataset
     x, y = load_training_data(features_csv=features_path, labels_csv=labels_path, images_root=images_root)
+    y = y.argmax(1)
     x_train, x_eval, y_train, y_eval = train_test_split(x, y, stratify=y, test_size=0.25, random_state=42)
     # class_weights = compute_class_weight('balanced', classes=np.unique(y_train), y=y_train)
     train_dataset = ImagesDataset(x_train, y_train, BASIC_TRANSFORM)
