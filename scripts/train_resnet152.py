@@ -89,7 +89,7 @@ def main(
     train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=2)
     eval_dataloader = DataLoader(eval_dataset, batch_size=batch_size, num_workers=2)
     model = resent152_animal()
-    criterion = nn.BCELoss()
+    criterion = nn.BCEWithLogitsLoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
     lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[3, 4], gamma=0.1)
     train(nn.DataParallel(model), criterion, optimizer, lr_scheduler, train_dataloader, eval_dataloader, num_epochs=num_epochs, device=device)
