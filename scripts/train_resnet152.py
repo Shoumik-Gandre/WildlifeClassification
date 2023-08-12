@@ -52,12 +52,13 @@ def eval_step(model: nn.Module, criterion: nn.CrossEntropyLoss, dataloader: Data
     return total_loss / len(dataloader)
 
 
-def train(model: nn.Module, criterion: nn.CrossEntropyLoss, optimizer: torch.optim.Optimizer, lr_scheduler: torch.optim.lr_scheduler._LRScheduler, train_dataloader: DataLoader, eval_dataloader: DataLoader, num_epochs: int, device: torch.device):
+def train(model: nn.Module, criterion: nn.CrossEntropyLoss, optimizer: torch.optim.Optimizer, lr_scheduler: torch.optim.lr_scheduler._LRScheduler, train_dataloader: DataLoader, eval_dataloader: DataLoader | None, num_epochs: int, device: torch.device):
     model = model.to(device)
     for epoch in range(1, num_epochs+1):
         train_step(model, criterion, optimizer, train_dataloader, AUGMENTATIONS, device)
-        eval_loss = eval_step(model, criterion, eval_dataloader, device)
-        print(f'{eval_loss = }')
+        if eval_dataloader:
+            eval_loss = eval_step(model, criterion, eval_dataloader, device)
+            print(f'{eval_loss = }')
     lr_scheduler.step()
 
 
@@ -88,9 +89,9 @@ def main(
     train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=2)
     eval_dataloader = DataLoader(eval_dataset, batch_size=batch_size, num_workers=2)
     model = resent152_animal()
-    criterion = nn.CrossEntropyLoss()
+    criterion = nn.BCELoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
-    lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[2, 3, 4, 5], gamma=0.1)
+    lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[3, 4], gamma=0.1)
     train(nn.DataParallel(model), criterion, optimizer, lr_scheduler, train_dataloader, eval_dataloader, num_epochs=num_epochs, device=device)
     torch.save(model.state_dict(), model_save_path)
 
