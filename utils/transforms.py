@@ -5,7 +5,6 @@ BASIC_TRANSFORM = transforms.Compose(
     [
         transforms.ToPILImage(),
         transforms.RandomHorizontalFlip(p=0.5),
-        transforms.ColorJitter(brightness=(0.1, 0.6), contrast=1, saturation=0, hue=0.4),
         transforms.RandomRotation(degrees=30),
         transforms.Resize((224, 224)), 
         transforms.ToTensor(), 
