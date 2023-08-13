@@ -57,8 +57,9 @@ def train(model: nn.Module, criterion: nn.Module, optimizer: torch.optim.Optimiz
     model = model.to(device)
     for epoch in range(1, num_epochs+1):
         train_step(model, criterion, optimizer, train_dataloader, AUGMENTATIONS, device)
-        eval_loss = eval_step(model, criterion, eval_dataloader, device)
-        print(f'{eval_loss = }')
+        if eval_dataloader:
+            eval_loss = eval_step(model, criterion, eval_dataloader, device)
+            print(f'{eval_loss = }')
     lr_scheduler.step()
 
 
@@ -83,7 +84,6 @@ def main(
     # Load Dataset
     x, y = load_training_data(features_csv=features_path, labels_csv=labels_path, images_root=images_root)
     x_train, x_eval, y_train, y_eval = train_test_split(x, y, stratify=y, test_size=0.25, random_state=42)
-    # class_weights = compute_class_weight('balanced', classes=np.unique(y_train), y=y_train)
     train_dataset = ImagesDataset(x_train, y_train, BASIC_TRANSFORM)
     eval_dataset = ImagesDataset(x_eval, y_eval, BASIC_TRANSFORM)
     train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=2)
@@ -91,7 +91,7 @@ def main(
     model = resnet50_animal()
     criterion = nn.BCEWithLogitsLoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
-    lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[2, 3], gamma=0.1)
+    lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[10, 100], gamma=0.1)
     train(nn.DataParallel(model), criterion, optimizer, lr_scheduler, train_dataloader, eval_dataloader, num_epochs=num_epochs, device=device)
     torch.save(model.state_dict(), model_save_path)
 
