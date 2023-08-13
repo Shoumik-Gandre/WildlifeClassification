@@ -3,7 +3,6 @@ from torchvision import transforms
 
 BASIC_TRANSFORM = transforms.Compose(
     [
-        transforms.ToPILImage(),
         transforms.RandomHorizontalFlip(p=0.5),
         transforms.RandomRotation(degrees=30),
         transforms.Resize((224, 224)), 
