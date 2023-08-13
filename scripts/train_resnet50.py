@@ -26,8 +26,9 @@ from utils.augmentations import AUGMENTATIONS
 def train_step(model: nn.Module, criterion: nn.Module, optimizer: torch.optim.Optimizer, dataloader: DataLoader, augmentations: Any, device: torch.device):
     model = model.train()
     for batch in tqdm(dataloader, desc="training"):
-        x = batch['image'].to(device)
+        x = augmentations(batch['image']).to(device)
         y = batch['label'].to(device)
+
 
         a = model(x)
         loss = criterion(a, y)
@@ -37,7 +38,7 @@ def train_step(model: nn.Module, criterion: nn.Module, optimizer: torch.optim.Op
         optimizer.step()
 
 
-def eval_step(model: nn.Module, criterion: nn.CrossEntropyLoss, dataloader: DataLoader, device: torch.device):
+def eval_step(model: nn.Module, criterion: nn.Module, dataloader: DataLoader, device: torch.device):
     model = model.eval()
     total_loss = 0.0
 
@@ -53,7 +54,7 @@ def eval_step(model: nn.Module, criterion: nn.CrossEntropyLoss, dataloader: Data
     return total_loss / len(dataloader)
 
 
-def train(model: nn.Module, criterion: nn.CrossEntropyLoss, optimizer: torch.optim.Optimizer, lr_scheduler: torch.optim.lr_scheduler._LRScheduler, train_dataloader: DataLoader, eval_dataloader: DataLoader, num_epochs: int, device: torch.device):
+def train(model: nn.Module, criterion: nn.Module, optimizer: torch.optim.Optimizer, lr_scheduler: torch.optim.lr_scheduler._LRScheduler, train_dataloader: DataLoader, eval_dataloader: DataLoader, num_epochs: int, device: torch.device):
     model = model.to(device)
     for epoch in range(1, num_epochs+1):
         train_step(model, criterion, optimizer, train_dataloader, AUGMENTATIONS, device)
@@ -89,9 +90,9 @@ def main(
     train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=2)
     eval_dataloader = DataLoader(eval_dataset, batch_size=batch_size, num_workers=2)
     model = resnet50_animal()
-    criterion = nn.CrossEntropyLoss()
+    criterion = nn.BCEWithLogitsLoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
-    lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[2, 3, 4, 5], gamma=0.1)
+    lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[2, 3], gamma=0.1)
     train(nn.DataParallel(model), criterion, optimizer, lr_scheduler, train_dataloader, eval_dataloader, num_epochs=num_epochs, device=device)
     torch.save(model.state_dict(), model_save_path)
 

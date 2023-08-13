@@ -36,7 +36,7 @@ def train_step(model: nn.Module, criterion: nn.Module, optimizer: torch.optim.Op
         optimizer.step()
 
 
-def eval_step(model: nn.Module, criterion: nn.CrossEntropyLoss, dataloader: DataLoader, device: torch.device):
+def eval_step(model: nn.Module, criterion: nn.Module, dataloader: DataLoader, device: torch.device):
     model = model.eval()
     total_loss = 0.0
 
@@ -52,7 +52,7 @@ def eval_step(model: nn.Module, criterion: nn.CrossEntropyLoss, dataloader: Data
     return total_loss / len(dataloader)
 
 
-def train(model: nn.Module, criterion: nn.CrossEntropyLoss, optimizer: torch.optim.Optimizer, lr_scheduler: torch.optim.lr_scheduler._LRScheduler, train_dataloader: DataLoader, eval_dataloader: DataLoader | None, num_epochs: int, device: torch.device):
+def train(model: nn.Module, criterion: nn.Module, optimizer: torch.optim.Optimizer, lr_scheduler: torch.optim.lr_scheduler._LRScheduler, train_dataloader: DataLoader, eval_dataloader: DataLoader | None, num_epochs: int, device: torch.device):
     model = model.to(device)
     for epoch in range(1, num_epochs+1):
         train_step(model, criterion, optimizer, train_dataloader, AUGMENTATIONS, device)
