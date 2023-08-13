@@ -26,7 +26,7 @@ from utils.augmentations import AUGMENTATIONS
 def train_step(model: nn.Module, criterion: nn.Module, optimizer: torch.optim.Optimizer, dataloader: DataLoader, augmentations: Any, device: torch.device):
     model = model.train()
     for batch in tqdm(dataloader, desc="training"):
-        x = augmentations(batch['image']).to(device)
+        x = augmentations(image=batch['image'])['image'].to(device)
         y = batch['label'].to(device)
 
 
